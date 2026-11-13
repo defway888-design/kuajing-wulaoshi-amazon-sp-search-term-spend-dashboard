@@ -29,4 +29,4 @@
 node scripts/build_dashboard.mjs --input <本地快照.json> --output <本地看板.html>
 ```
 
-该命令应从 Skill 根目录运行。失败时非零退出，输出错误上下文，不生成“部分成功”的 HTML。
+该命令应从 Skill 根目录运行；`--output` 指向本次交付的本地 `.html` 文件，必须位于 Skill 包目录之外。构建成功后，脚本打印绝对 `output` 路径；运行者须打开并交付**该文件**，不可改交模板、旧的 CA 样例或 GitHub 源码。失败时非零退出，输出错误上下文，不生成“部分成功”的 HTML。

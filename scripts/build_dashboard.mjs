@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFile, writeFile, rename, mkdir, rm } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { dirname, resolve, relative, isAbsolute, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
@@ -234,12 +234,18 @@ async function main() {
   need(args.length === 4 && args[0] === '--input' && args[2] === '--output', '用法: node scripts/build_dashboard.mjs --input <快照.json> --output <看板.html>');
   const inputPath = resolve(args[1]), outputPath = resolve(args[3]);
   need(inputPath !== outputPath, '输入和输出路径不能相同');
+  need(extname(outputPath).toLowerCase() === '.html', '输出必须是本地 .html 文件');
+  const skillRoot = resolve(scriptDir, '..');
+  const outputWithinSkill = relative(skillRoot, outputPath);
+  need(outputWithinSkill === '..' || outputWithinSkill.startsWith('..' + sep) || isAbsolute(outputWithinSkill), '真实看板输出路径必须位于 Skill 包目录之外');
   const source = JSON.parse(await readFile(inputPath, 'utf8'));
   const payload = buildPayload(source);
   const template = await readFile(resolve(scriptDir, '../assets/dashboard-template.html'), 'utf8');
   need(template.includes('__EMBEDDED_DASHBOARD_JSON__'), 'HTML 模板缺少数据占位符');
+  need(template.includes('__DASHBOARD_RUNTIME_JS__'), 'HTML 模板缺少交互脚本占位符');
+  const runtime = await readFile(resolve(scriptDir, '../assets/dashboard-runtime.js'), 'utf8');
   const embedded = JSON.stringify(payload).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
-  const html = template.replace('__EMBEDDED_DASHBOARD_JSON__', embedded);
+  const html = template.replace('__EMBEDDED_DASHBOARD_JSON__', embedded).replace('__DASHBOARD_RUNTIME_JS__', runtime);
   await mkdir(dirname(outputPath), { recursive: true });
   const temp = `${outputPath}.tmp-${process.pid}`;
   try { await writeFile(temp, html, 'utf8'); await rename(temp, outputPath); }

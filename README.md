@@ -34,7 +34,7 @@
 
 ## 执行结果与失败边界
 
-成功后交付一个本地单文件 HTML：第一层按搜索词或客户搜索 ASIN 展示花费和广告订单占比；点击单项后，在第二层查看各店铺与 Campaign 的花费、转化率图和人工优化建议。首层可输入 ASIN、筛选日期与店铺，并在广告订单占比列标题处切换升序或降序。
+成功后交付**本次从领星 MCP 数据生成的本地单文件 HTML**，版式沿用用户确认过的本地两层看板，并按本次站点、店铺、日期和币种显示数据。第一层按搜索词或客户搜索 ASIN 展示花费和广告订单占比；点击单项后，在第二层查看各店铺与 Campaign 的花费、转化率图和人工优化建议。首层可输入 ASIN、筛选日期与店铺，并在广告订单占比列标题处切换升序或降序。最终返回该 HTML 的本地绝对路径；仓库里的模板或历史看板不作为交付结果。
 
 领星 MCP 未配置、未授权、报告权限不足、分页/总计不完整或必需字段缺失时停止，不以旧数据、部分店铺或缺失值代替完整结果。
 
@@ -52,9 +52,15 @@
 - [`references/business-rules.md`](references/business-rules.md)：两层看板的筛选、图表与优化建议规则。
 - [`references/snapshot-format.md`](references/snapshot-format.md)：原始 MCP 响应的本地快照结构。
 - [`scripts/build_dashboard.mjs`](scripts/build_dashboard.mjs)：校验快照并生成离线看板。
-- [`assets/dashboard-template.html`](assets/dashboard-template.html)：离线页面模板。
+- [`assets/dashboard-template.html`](assets/dashboard-template.html)：已确认本地看板的去数据版式。
+- [`assets/dashboard-runtime.js`](assets/dashboard-runtime.js)：生成时内嵌进 HTML 的交互逻辑。
 
 ## 版本更新记录
+
+### v1.0.1｜2026-11-13（北京时间）
+
+- 改用已确认的本地两层看板版式，动态适配站点、店铺、日期与币种；明确最终交付本次生成的本地 HTML，并禁止将真实看板写入 Skill 包目录。
+- 影响范围：页面交付、执行脚本、使用说明；SP 指标和 ASIN 关联口径未变。
 
 ### v1.0.0｜2026-11-13（北京时间）
 
